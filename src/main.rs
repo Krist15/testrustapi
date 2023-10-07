@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use dotenv;
 use serde::{Deserialize, Serialize};
@@ -37,9 +38,12 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
 
     HttpServer::new(move || {
+        let cors = Cors::permissive();
+
         App::new()
             .app_data(web::Data::new(AppState { db: pool.clone() }))
             .service(ping)
+            .wrap(cors)
     })
     .bind(("127.0.0.1", 18200))?
     .run()
